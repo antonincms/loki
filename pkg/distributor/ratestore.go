@@ -83,7 +83,7 @@ func NewRateStore(cfg RateStoreConfig, r ring.ReadRing, cf poolClientFactory, l 
 		ingesterTimeout: cfg.IngesterReqTimeout,
 		rateKeepAlive:   10 * time.Minute,
 		limits:          l,
-		metrics:         newRateStoreMetrics(registerer),
+		metrics:         newRateStoreMetrics(registerer, false),
 		rates:           make(map[string]map[uint64]expiringRate),
 		debug:           cfg.Debug,
 	}

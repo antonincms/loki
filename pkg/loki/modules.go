@@ -118,6 +118,7 @@ const (
 	Server                   = "server"
 	InternalServer           = "internal-server"
 	Distributor              = "distributor"
+	RateStoreStandalone      = "rate-store-standalone"
 	IngestLimits             = "ingest-limits"
 	IngestLimitsRing         = "ingest-limits-ring"
 	IngestLimitsFrontend     = "ingest-limits-frontend"
@@ -349,6 +350,23 @@ func (t *Loki) initTenantConfigs() (_ services.Service, err error) {
 	t.tenantConfigs, err = runtime.NewTenantConfigs(newTenantConfigProvider(t.runtimeConfig))
 	// tenantConfigs are not a service, since they don't have any operational state.
 	return nil, err
+}
+
+func (t *Loki) initRateStoreStandalone() (services.Service, error) {
+	var err error
+	t.rateStoreStandalone, err = distributor.NewRateStoreStandalone(
+		t.Cfg.Distributor.RateStore,
+		t.Cfg.IngesterClient,
+		t.ring,
+		t.Overrides,
+		t.Cfg.MetricsNamespace,
+		prometheus.DefaultRegisterer,
+		util_log.Logger,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return t.rateStoreStandalone, nil
 }
 
 func (t *Loki) initDistributor() (services.Service, error) {

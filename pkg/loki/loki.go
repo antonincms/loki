@@ -420,6 +420,7 @@ type Loki struct {
 	tenantConfigs             *runtime.TenantConfigs
 	TenantLimits              validation.TenantLimits
 	distributor               *distributor.Distributor
+	rateStoreStandalone       *distributor.RateStoreStandalone
 	ingestLimits              *limits.Service
 	ingestLimitsRing          *ring.Ring
 	ingestLimitsFrontend      *limits_frontend.Frontend
@@ -762,6 +763,7 @@ func (t *Loki) setupModuleManager() error {
 	mm.RegisterModule(OverridesExporter, t.initOverridesExporter)
 	mm.RegisterModule(TenantConfigs, t.initTenantConfigs, modules.UserInvisibleModule)
 	mm.RegisterModule(Distributor, t.initDistributor)
+	mm.RegisterModule(RateStoreStandalone, t.initRateStoreStandalone)
 	mm.RegisterModule(IngestLimits, t.initIngestLimits)
 	mm.RegisterModule(IngestLimitsFrontend, t.initIngestLimitsFrontend)
 	mm.RegisterModule(Store, t.initStore, modules.UserInvisibleModule)
@@ -813,6 +815,7 @@ func (t *Loki) setupModuleManager() error {
 		TenantConfigs:            {RuntimeConfig},
 		UI:                       {Server},
 		Distributor:              {Ring, Server, Overrides, TenantConfigs, PatternRingClient, PatternIngesterTee, Analytics, PartitionRing, IngestLimitsFrontendRing, UI},
+		RateStoreStandalone:      {Ring, Server, Overrides, TenantConfigs, PartitionRing},
 		IngestLimitsRing:         {RuntimeConfig, Server, MemberlistKV},
 		IngestLimits:             {MemberlistKV, Overrides, Server},
 		IngestLimitsFrontend:     {IngestLimitsRing, Overrides, Server, MemberlistKV},
